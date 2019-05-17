@@ -48,9 +48,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Steamworks.NET">
-      <HintPath>..\..\..\..\Steamworks.NET-Standalone_7.0.0\Steamworks.NET-Standalone_7.0.0\Windows-x86\Steamworks.NET.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
