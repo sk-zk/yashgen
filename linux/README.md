@@ -4,7 +4,7 @@ Creates a Youtube ASH file from the command line.
 The following libraries must be present:
 
 libASMedia.so *(from Audiosurf 2/Audiosurf2_Data/Plugins/x86_64/)*  
-libbass.so *(from tAudiosurf 2/Audiosurf2_Data/Plugins/x86_64/)*  
+libbass.so *(from Audiosurf 2/Audiosurf2_Data/Plugins/x86_64/)*  
 TagLib#  
 youtube-dl *(make sure to install the most recent version)*
 
@@ -19,7 +19,7 @@ destination: The destination folder (optional).
 ### Troubleshooting
 
 #### DllNotFoundException
-If you run into a DllNotFoundException, run the program with `MONO_LOG_LEVEL=debug` and `MONO_LOG_MASK=dll`. The output should tell you which libraries are missing.
+In case of a DllNotFoundException, run the program with `MONO_LOG_LEVEL=debug` and `MONO_LOG_MASK=dll`. The output should tell you which libraries are missing.
 
 You might also have to move `libASMedia` and `libbass` to `/usr/lib/`.
 
