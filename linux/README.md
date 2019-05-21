@@ -15,3 +15,13 @@ youtube-dl *(make sure to install the most recent version)*
 video_id: The ID of the YouTube video.
 
 destination: The destination folder (optional).
+
+### Troubleshooting
+
+#### DllNotFoundException
+If you run into a DllNotFoundException, run the program with `MONO_LOG_LEVEL=debug` and `MONO_LOG_MASK=dll`. The output should tell you which libraries are missing.
+
+You might also have to move `libASMedia` and `libbass` to `/usr/lib/`.
+
+#### ALSA: `cannot find card 0`
+You may need to install a [dummy soundcard](https://www.raspberrypi.org/forums/viewtopic.php?p=485842&sid=5b596e5473571e5918872059e32a6873#p485842) on your system.
