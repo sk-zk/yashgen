@@ -28,9 +28,14 @@ namespace yashgen
         {
             errors = "";
             string tempFile = Path.Combine(OUTPUT_FOLDER, videoId + ".m4a");
+
+            // workaround for "invalid retry count" bug with leading dashes in IDs
+            var videoUrl = $"https://www.youtube.com/watch?v={videoId}"; 
+
             ProcessStartInfo info = new ProcessStartInfo(
-                 "youtube-dl.exe", "--ignore-config -f bestaudio -x --audio-format m4a --add-metadata -o " +
-                 OUTPUT_FOLDER + "/%(id)s.%(ext)s " + videoId
+                 "youtube-dl.exe", 
+                 $"--ignore-config -f bestaudio -x --audio-format m4a --add-metadata " +
+                 $"-o {OUTPUT_FOLDER}/%(id)s.%(ext)s \"{videoUrl}\""
                 );
             info.CreateNoWindow = true;
             info.UseShellExecute = false;
