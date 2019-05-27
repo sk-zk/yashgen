@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0DC8A1B5-B9B2-436D-A26C-D545E9C71503}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ashgen", "yashgen\yashgen.csproj", "{86FA8B05-9B45-4AE8-A4D8-6E6F1A98083C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "yashgen", "yashgen\yashgen.csproj", "{86FA8B05-9B45-4AE8-A4D8-6E6F1A98083C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,5 +23,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEDB9C9C-DB17-4BAA-B928-9E0FB18E7E0E}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		version = 1.1
 	EndGlobalSection
 EndGlobal
