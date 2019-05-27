@@ -12,8 +12,21 @@ namespace yashgen
     class Program
     {
         static SongLoader songLoader = new SongLoader();
+
+        private const int ExitUnspecified = -1;
+        private const int ExitInvalidId = 1;
+        private const int ExitYoutubeDlError = 2;
+        private const int ExitNoArgs = 3;
+
         static void Main(string[] args)
         {
+            if(args.Length == 0)
+            {
+                Console.WriteLine("Usage:");
+                Console.WriteLine("yashgen video_id [destination]");
+                Environment.Exit(ExitNoArgs);
+            }
+
             var id = args[0];
             var path = args.Length > 1 ? args[1] : "";
 
@@ -22,17 +35,25 @@ namespace yashgen
                 if (IsYoutubeId(id))
                 {
                     ProcessVideo(id, path);
-                }             
+                    Console.WriteLine("Done\n");
+                }
                 else
                 {
                     Console.Error.WriteLine("\"{0}\" doesn't appear to be a valid ID\n", id);
+                    Environment.Exit(ExitInvalidId);
                 }
             }
+			catch (YoutubeDlException yex) 
+			{
+                Console.Error.WriteLine("youtube-dl encountered an error:");
+                Console.Error.WriteLine(yex.Message);
+                Environment.Exit(ExitYoutubeDlError);
+			}
             catch (Exception ex)
             {
                 Console.Error.WriteLine("Something went wrong:");
                 Console.Error.WriteLine(ex.ToString());
-                Environment.Exit(1);
+                Environment.Exit(ExitUnspecified);
             }
 
             #if DEBUG
@@ -50,8 +71,7 @@ namespace yashgen
 
         static void ProcessVideo(string videoId, string path)
         {
-            CreateAndSaveYash(videoId, path);         
-            Console.WriteLine("Done\n");
+            CreateAndSaveYash(videoId, path);
         }
 
         static void CreateAndSaveYash(string videoId, string path)
@@ -63,11 +83,9 @@ namespace yashgen
             {
                 ytAudioFile = YoutubeDl.CallYoutubeDl(videoId);
             } 
-            catch (YoutubeDlException yex)
+            catch (YoutubeDlException)
             {
-                Console.Error.WriteLine("youtube-dl encountered an error:");
-                Console.Error.WriteLine(yex.Message);
-                return;
+                throw;
             }
 
             Console.WriteLine("Analyzing song");
@@ -82,10 +100,18 @@ namespace yashgen
                 var filename = $"youtube_{videoId}.yash";
                 SaveYash(sums, duration, Path.Combine(path, filename));
             }
-            catch (IOException ioex)
+            catch (IOException)
             {
-                Console.Error.WriteLine("Something went wrong:");
-                Console.Error.WriteLine(ioex.ToString());
+				throw;
+            }
+			
+			try
+            {
+                File.Delete(ytAudioFile);
+            }
+            catch(IOException)
+            {
+                // oh well.
             }
         }
 

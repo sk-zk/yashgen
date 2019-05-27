@@ -34,7 +34,7 @@ namespace yashgen
             
             ProcessStartInfo info = new ProcessStartInfo(
                  "youtube-dl", 
-                 $"--ignore-config -f bestaudio -x --audio-format m4a --add-metadata " +
+                 $"--ignore-config -f bestaudio -x --audio-format wav --add-metadata " +
                  $"-o {OUTPUT_FOLDER}/%(id)s.%(ext)s \"{videoUrl}\""
                 );
             info.CreateNoWindow = true;
