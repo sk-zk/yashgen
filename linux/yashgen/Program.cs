@@ -30,6 +30,10 @@ namespace yashgen
             var id = args[0];
             var path = args.Length > 1 ? args[1] : "";
 
+            #if DEBUG
+                YoutubeDl.DebugPrintVersion();
+            #endif
+
             try
             {
                 if (IsYoutubeId(id))
@@ -55,10 +59,6 @@ namespace yashgen
                 Console.Error.WriteLine(ex.ToString());
                 Environment.Exit(ExitUnspecified);
             }
-
-            #if DEBUG
-                Console.ReadLine();
-            #endif
         }
 
         static bool IsYoutubeId(string input)
