@@ -23,18 +23,22 @@ namespace yashgen
             if(args.Length == 0)
             {
                 Console.WriteLine("Usage:");
-                Console.WriteLine("yashgen video_id [destination]");
+                Console.WriteLine("yashgen video_id destination [-6]");
                 Environment.Exit(ExitNoArgs);
             }
 
             var id = args[0];
             var path = args.Length > 1 ? args[1] : "";
 
+            // force ytdl to use ipv6
+            // fixes "This video is not available" for auto-generated videos
+            var ipv6 = args.Contains("-6");
+
             try
             {
                 if (IsYoutubeId(id))
                 {
-                    ProcessVideo(id, path);
+                    ProcessVideo(id, path, ipv6);
                     Console.WriteLine("Done\n");
                 }
                 else
@@ -69,19 +73,19 @@ namespace yashgen
             return true;
         }
 
-        static void ProcessVideo(string videoId, string path)
+        static void ProcessVideo(string videoId, string path, bool ipv6 = false)
         {
-            CreateAndSaveYash(videoId, path);
+            CreateAndSaveYash(videoId, path, ipv6);
         }
 
-        static void CreateAndSaveYash(string videoId, string path)
+        static void CreateAndSaveYash(string videoId, string path, bool ipv6 = false)
         {
             Console.WriteLine("Processing {0} now", videoId);
             Console.WriteLine("Downloading audio");
             string ytAudioFile; 
             try
             {
-                ytAudioFile = YoutubeDl.CallYoutubeDl(videoId);
+                ytAudioFile = YoutubeDl.CallYoutubeDl(videoId, ipv6);
             } 
             catch (YoutubeDlException)
             {

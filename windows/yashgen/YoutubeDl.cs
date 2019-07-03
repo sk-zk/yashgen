@@ -24,26 +24,28 @@ namespace yashgen
         /// </summary>
         /// <param name="videoId">The ID of the video.</param>
         /// <returns>The path to the downloaded file.</returns>
-        public static string CallYoutubeDl(string videoId)
+        public static string CallYoutubeDl(string videoId, bool ipv6 = false)
         {
             errors = "";
             string tempFile = Path.Combine(OUTPUT_FOLDER, videoId + ".m4a");
 
             // workaround for "invalid retry count" bug with leading dashes in IDs
-            var videoUrl = $"https://www.youtube.com/watch?v={videoId}"; 
+            var videoUrl = $"https://www.youtube.com/watch?v={videoId}";
+
+            var args = $"--ignore-config -f bestaudio -x --audio-format m4a --add-metadata " +
+                 $"-o {OUTPUT_FOLDER}/%(id)s.%(ext)s \"{videoUrl}\"";
+
+            if (ipv6) args += " -6"; // force ipv6
 
             ProcessStartInfo info = new ProcessStartInfo(
-                 "youtube-dl.exe", 
-                 $"--ignore-config -f bestaudio -x --audio-format m4a --add-metadata " +
-                 $"-o {OUTPUT_FOLDER}/%(id)s.%(ext)s \"{videoUrl}\""
-                );
+                 "youtube-dl.exe", args);
             info.CreateNoWindow = true;
             info.UseShellExecute = false;
             info.RedirectStandardOutput = true;
             info.RedirectStandardError = true;
             Process process = new Process();
             process.StartInfo = info;
-            //process.OutputDataReceived += Process_OutputDataReceived;
+            process.OutputDataReceived += Process_OutputDataReceived;
             process.ErrorDataReceived += Process_ErrorDataReceived;
             process.Start();
             process.BeginOutputReadLine();
@@ -57,19 +59,18 @@ namespace yashgen
             return tempFile;
         }
 
-        /*private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-
-        }*/
+            #if DEBUG
+                Console.WriteLine(e.Data);
+            #endif
+        }
 
         private static void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
-            if (e.Data != null)
+            if (e.Data != null && e.Data.Trim() != "")
             {
-                if (e.Data.Trim() != "")
-                {
-                    errors += e.Data;
-                }
+                errors += e.Data;
             }
         }
 
