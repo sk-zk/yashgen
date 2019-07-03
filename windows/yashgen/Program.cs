@@ -23,7 +23,7 @@ namespace yashgen
             if(args.Length == 0)
             {
                 Console.WriteLine("Usage:");
-                Console.WriteLine("yashgen video_id [destination]");
+                Console.WriteLine("yashgen video_id destination [-6]");
                 Environment.Exit(ExitNoArgs);
             }
 
