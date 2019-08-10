@@ -24,7 +24,7 @@ namespace yashgen
         /// </summary>
         /// <param name="videoId">The ID of the video.</param>
         /// <returns>The path to the downloaded file.</returns>
-        public static string CallYoutubeDl(string videoId)
+        public static string CallYoutubeDl(string videoId, bool ipv6 = false)
         {
             errors = "";
             string tempFile = Path.Combine(OUTPUT_FOLDER, videoId + ".wav");
@@ -32,8 +32,7 @@ namespace yashgen
             // workaround for "invalid retry count" bug with leading dashes in IDs
             var videoUrl = $"https://www.youtube.com/watch?v={videoId}";
             
-            var info = new ProcessStartInfo(
-                 "youtube-dl", 
+            var info = new ProcessStartInfo("youtube-dl", 
                  $"--ignore-config -f bestaudio -x --audio-format wav --add-metadata " +
                  $"-o {OUTPUT_FOLDER}/%(id)s.%(ext)s \"{videoUrl}\""
                 );
@@ -65,7 +64,6 @@ namespace yashgen
             {
                 throw new YoutubeDlException(errors);
             }
-
             return tempFile;
         }
 

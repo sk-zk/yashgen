@@ -20,7 +20,7 @@ namespace yashgen
 
         static void Main(string[] args)
         {
-            if(args.Length == 0)
+            if (args.Length == 0)
             {
                 Console.WriteLine("Usage:");
                 Console.WriteLine("yashgen video_id destination [-6]");
@@ -33,6 +33,10 @@ namespace yashgen
             // force ytdl to use ipv6
             // fixes "This video is not available" for auto-generated videos
             var ipv6 = args.Contains("-6");
+
+            #if DEBUG
+                YoutubeDl.DebugPrintVersion();
+            #endif
 
             try
             {
@@ -60,9 +64,6 @@ namespace yashgen
                 Environment.Exit(ExitUnspecified);
             }
 
-            #if DEBUG
-                Console.ReadLine();
-            #endif
         }
 
         static bool IsYoutubeId(string input)
@@ -113,7 +114,7 @@ namespace yashgen
             {
                 File.Delete(ytAudioFile);
             }
-            catch(IOException)
+            catch (IOException)
             {
                 // oh well.
             }
