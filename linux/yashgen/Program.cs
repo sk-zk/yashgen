@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
 
@@ -68,10 +69,7 @@ namespace yashgen
 
         static bool IsYoutubeId(string input)
         {
-            if (input.Length != 11) return false;
-            if (input.Contains("/") || input.Contains("\\")) return false;
-            if (File.Exists(input)) return false;
-            return true;
+            return Regex.IsMatch(input, "^[a-zA-Z0-9_-]{11}$");
         }
 
         static void ProcessVideo(string videoId, string path, bool ipv6 = false)
