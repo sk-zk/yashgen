@@ -24,31 +24,40 @@ namespace yashgen
         /// </summary>
         /// <param name="videoId">The ID of the video.</param>
         /// <returns>The path to the downloaded file.</returns>
-        public static string CallYoutubeDl(string videoId, bool ipv6 = false)
+        public static string CallYoutubeDl(string videoId)
         {
             errors = "";
             string tempFile = Path.Combine(OUTPUT_FOLDER, videoId + ".wav");
             
             // workaround for "invalid retry count" bug with leading dashes in IDs
             var videoUrl = $"https://www.youtube.com/watch?v={videoId}";
+            
+            var info = new ProcessStartInfo(
+                 "youtube-dl", 
+                 $"--ignore-config -f bestaudio -x --audio-format wav --add-metadata " +
+                 $"-o {OUTPUT_FOLDER}/%(id)s.%(ext)s \"{videoUrl}\""
+                );
+            
+            if (ipv6) info.Arguments += " -6"; // force ipv6
 
-            var args = $"--ignore-config -f bestaudio -x --audio-format wav --add-metadata " +
-                 $"-o {OUTPUT_FOLDER}/%(id)s.%(ext)s \"{videoUrl}\"";
+            #if DEBUG
+                Console.WriteLine("videoUrl: " + videoUrl);
+                Console.WriteLine("args: " + info.Arguments);
+            #endif
 
-            if (ipv6) args += " -6"; // force ipv6
-
-            ProcessStartInfo info = new ProcessStartInfo(
-                 "youtube-dl", args);
             info.CreateNoWindow = true;
             info.UseShellExecute = false;
-            info.RedirectStandardOutput = true;
+            #if RELEASE
+                info.RedirectStandardOutput = true;
+            #endif
             info.RedirectStandardError = true;
             Process process = new Process();
             process.StartInfo = info;
-            //process.OutputDataReceived += Process_OutputDataReceived;
             process.ErrorDataReceived += Process_ErrorDataReceived;
             process.Start();
-            process.BeginOutputReadLine();
+            #if RELEASE
+                process.BeginOutputReadLine();
+            #endif
             process.BeginErrorReadLine();
             process.WaitForExit();
             process.Dispose();
@@ -56,22 +65,27 @@ namespace yashgen
             {
                 throw new YoutubeDlException(errors);
             }
+
             return tempFile;
         }
 
-        /*private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        public static void DebugPrintVersion()
         {
-
-        }*/
+            var info = new ProcessStartInfo("youtube-dl", "--version");
+            info.CreateNoWindow = true;
+            info.UseShellExecute = false;
+            Process process = new Process();
+            process.StartInfo = info;
+            process.Start();
+            process.WaitForExit();
+            process.Dispose();
+        }
 
         private static void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
-            if (e.Data != null)
+            if (e.Data != null && e.Data.Trim() != "")
             {
-                if (e.Data.Trim() != "")
-                {
-                    errors += e.Data;
-                }
+                errors += e.Data;
             }
         }
 

@@ -33,6 +33,10 @@ namespace yashgen
             // force ytdl to use ipv6
             // fixes "This video is not available" for auto-generated videos
             var ipv6 = args.Contains("-6");
+            
+            #if DEBUG
+                YoutubeDl.DebugPrintVersion();
+            #endif
 
             try
             {
@@ -59,10 +63,7 @@ namespace yashgen
                 Console.Error.WriteLine(ex.ToString());
                 Environment.Exit(ExitUnspecified);
             }
-
-            #if DEBUG
-                Console.ReadLine();
-            #endif
+           
         }
 
         static bool IsYoutubeId(string input)
