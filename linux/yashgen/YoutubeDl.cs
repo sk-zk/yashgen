@@ -46,17 +46,14 @@ namespace yashgen
 
             info.CreateNoWindow = true;
             info.UseShellExecute = false;
-            #if RELEASE
-                info.RedirectStandardOutput = true;
-            #endif
+            info.RedirectStandardOutput = true;
             info.RedirectStandardError = true;
             Process process = new Process();
             process.StartInfo = info;
+            process.OutputDataReceived += Process_OutputDataReceived;
             process.ErrorDataReceived += Process_ErrorDataReceived;
             process.Start();
-            #if RELEASE
-                process.BeginOutputReadLine();
-            #endif
+            process.BeginOutputReadLine();
             process.BeginErrorReadLine();
             process.WaitForExit();
             process.Dispose();
@@ -79,6 +76,13 @@ namespace yashgen
             process.Dispose();
         }
 
+        private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            #if DEBUG
+                Console.WriteLine(e.Data);
+            #endif
+        }
+
         private static void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null && e.Data.Trim() != "")
@@ -88,6 +92,4 @@ namespace yashgen
         }
 
     }
-
-
 }
