@@ -12,7 +12,7 @@ namespace yashgen
 {
     class Program
     {
-        static SongLoader songLoader = new SongLoader();
+        private static SongLoader songLoader = new SongLoader();
 
         private const int ExitUnspecified = -1;
         private const int ExitInvalidId = 1;
@@ -34,7 +34,7 @@ namespace yashgen
             // force ytdl to use ipv6
             // fixes "This video is not available" for auto-generated videos
             var ipv6 = args.Contains("-6");
-            
+
             #if DEBUG
                 YoutubeDl.DebugPrintVersion();
             #endif
@@ -52,19 +52,19 @@ namespace yashgen
                     Environment.Exit(ExitInvalidId);
                 }
             }
-            catch (YoutubeDlException yex)
-            {
+			catch (YoutubeDlException yex) 
+			{
                 Console.Error.WriteLine("youtube-dl encountered an error:");
                 Console.Error.WriteLine(yex.Message);
                 Environment.Exit(ExitYoutubeDlError);
-            }
+			}
             catch (Exception ex)
             {
                 Console.Error.WriteLine("Something went wrong:");
                 Console.Error.WriteLine(ex.ToString());
                 Environment.Exit(ExitUnspecified);
             }
-           
+
         }
 
         static bool IsYoutubeId(string input)
@@ -81,11 +81,11 @@ namespace yashgen
         {
             Console.WriteLine("Processing {0} now", videoId);
             Console.WriteLine("Downloading audio");
-            string ytAudioFile;
+            string ytAudioFile; 
             try
             {
                 ytAudioFile = YoutubeDl.CallYoutubeDl(videoId, ipv6);
-            }
+            } 
             catch (YoutubeDlException)
             {
                 throw;
@@ -105,10 +105,10 @@ namespace yashgen
             }
             catch (IOException)
             {
-                throw;
+				throw;
             }
-
-            try
+			
+			try
             {
                 File.Delete(ytAudioFile);
             }
