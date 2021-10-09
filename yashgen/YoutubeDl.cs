@@ -48,17 +48,14 @@ namespace yashgen
 
             info.CreateNoWindow = true;
             info.UseShellExecute = false;
-            #if RELEASE
-                info.RedirectStandardOutput = true;
-            #endif
+            info.RedirectStandardOutput = true;
             info.RedirectStandardError = true;
             var process = new Process();
             process.StartInfo = info;
+            process.OutputDataReceived += Process_OutputDataReceived;
             process.ErrorDataReceived += ErrorDataReceived;
             process.Start();
-            #if RELEASE
                 process.BeginOutputReadLine();
-            #endif
             process.BeginErrorReadLine();
             process.WaitForExit();
             process.Dispose();
@@ -67,6 +64,13 @@ namespace yashgen
                 throw new YoutubeDlException(errors);
 
             return tempFile;
+        }
+
+        private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            #if DEBUG
+                Console.WriteLine(e.Data);
+            #endif
         }
 
         public static void PrintVersion(string ydlPath)
