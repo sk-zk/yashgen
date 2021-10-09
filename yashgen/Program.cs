@@ -36,7 +36,7 @@ namespace yashgen
             var ipv6 = args.Contains("-6");
 
             #if DEBUG
-                YoutubeDl.DebugPrintVersion();
+                YoutubeDl.PrintVersion();
             #endif
 
             try
@@ -64,13 +64,10 @@ namespace yashgen
                 Console.Error.WriteLine(ex.ToString());
                 Environment.Exit(ExitUnspecified);
             }
-
         }
 
-        static bool IsYoutubeId(string input)
-        {
-            return Regex.IsMatch(input, "^[a-zA-Z0-9_-]{11}$");
-        }
+        static bool IsYoutubeId(string input) 
+            => Regex.IsMatch(input, "^[a-zA-Z0-9_-]{11}$");
 
         static void ProcessVideo(string videoId, string path, bool ipv6 = false)
         {
@@ -79,7 +76,7 @@ namespace yashgen
 
         static void CreateAndSaveYash(string videoId, string path, bool ipv6 = false)
         {
-            Console.WriteLine("Processing {0} now", videoId);
+            Console.WriteLine("Processing {0}", videoId);
             Console.WriteLine("Downloading audio");
             string ytAudioFile; 
             try
@@ -92,10 +89,10 @@ namespace yashgen
             }
 
             Console.WriteLine("Analyzing song");
-            TagLib.File file = TagLib.File.Create(ytAudioFile);
+            var file = TagLib.File.Create(ytAudioFile);
             float duration = (float)file.Properties.Duration.TotalSeconds;
             file.Dispose();
-            List<float> sums = songLoader.DecodeSongSums(ytAudioFile, duration);
+            var sums = songLoader.DecodeSongSums(ytAudioFile);
 
             Console.WriteLine("Saving yash");
             try
