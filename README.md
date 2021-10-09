@@ -14,6 +14,7 @@ Creates a YouTube ASH file for Audiosurf 2 from the command line.
 ### Linux
 The following libraries / programs are needed:
 
+* ffmpeg
 * libASMedia.so *(from Audiosurf 2/Audiosurf2_Data/Plugins/x86_64/)*  
 * libbass.so *(from Audiosurf 2/Audiosurf2_Data/Plugins/x86_64/)*  
 * youtube-dl or a compatible fork
