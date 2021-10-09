@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
+using Mono.Options;
 
 namespace yashgen
 {
@@ -21,29 +22,46 @@ namespace yashgen
 
         static void Main(string[] args)
         {
+            string id = "";
+            string destination = ".";
+            string ydlPath = "./youtube-dl";
+            bool forceIpv6 = false;
+
+            var p = new OptionSet()
+            {
+                { "<>", 
+                    "A YouTube ID", 
+                    x => { id = x; } },
+                { "d|dest=",
+                    $"The output folder. Default: {destination}", 
+                    x => { destination = x; } },
+                { "p|proc=", 
+                    $"Path to youtube-dl or a fork with a compatible API. Default: {ydlPath}", 
+                    x => { ydlPath = x; } },
+                { "6", 
+                    "Forces the downloader to use IPv6.", 
+                    x => { forceIpv6 = true; } },
+            };
+
             if (args.Length == 0)
             {
-                Console.WriteLine("Usage:");
-                Console.WriteLine("yashgen video_id destination [-6]");
+                Console.WriteLine("yashgen video_id [options]\n");
+                Console.WriteLine("Options:");
+                p.WriteOptionDescriptions(Console.Out);
                 Environment.Exit(ExitNoArgs);
             }
 
-            var id = args[0];
-            var path = args.Length > 1 ? args[1] : "";
-
-            // force ytdl to use ipv6
-            // fixes "This video is not available" for auto-generated videos
-            var ipv6 = args.Contains("-6");
+            p.Parse(args);
 
             #if DEBUG
-                YoutubeDl.PrintVersion();
+                YoutubeDl.PrintVersion(ydlPath);
             #endif
 
             try
             {
                 if (IsYoutubeId(id))
                 {
-                    ProcessVideo(id, path, ipv6);
+                    CreateAndSaveYash(id, destination, ydlPath, forceIpv6);
                     Console.WriteLine("Done\n");
                 }
                 else
@@ -69,19 +87,14 @@ namespace yashgen
         static bool IsYoutubeId(string input) 
             => Regex.IsMatch(input, "^[a-zA-Z0-9_-]{11}$");
 
-        static void ProcessVideo(string videoId, string path, bool ipv6 = false)
-        {
-            CreateAndSaveYash(videoId, path, ipv6);
-        }
-
-        static void CreateAndSaveYash(string videoId, string path, bool ipv6 = false)
+        static void CreateAndSaveYash(string videoId, string destination, string ydlPath, bool forceIpv6 = false)
         {
             Console.WriteLine("Processing {0}", videoId);
             Console.WriteLine("Downloading audio");
             string ytAudioFile; 
             try
             {
-                ytAudioFile = YoutubeDl.CallYoutubeDl(videoId, ipv6);
+                ytAudioFile = YoutubeDl.CallYoutubeDl(videoId, ydlPath, forceIpv6);
             } 
             catch (YoutubeDlException)
             {
@@ -98,7 +111,7 @@ namespace yashgen
             try
             {
                 var filename = $"youtube_{videoId}.yash";
-                SaveYash(sums, duration, Path.Combine(path, filename));
+                SaveYash(sums, duration, Path.Combine(destination, filename));
             }
             catch (IOException)
             {

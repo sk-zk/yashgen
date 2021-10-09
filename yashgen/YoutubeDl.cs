@@ -13,7 +13,6 @@ namespace yashgen
     /// </summary>
     class YoutubeDl
     {
-        private const string ydlLocation = "youtube-dl";
         private readonly static string OUTPUT_FOLDER = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "yashgen");
@@ -25,7 +24,7 @@ namespace yashgen
         /// </summary>
         /// <param name="videoId">The ID of the video.</param>
         /// <returns>The path to the downloaded file.</returns>
-        public static string CallYoutubeDl(string videoId, bool ipv6 = false)
+        public static string CallYoutubeDl(string videoId, string ydlPath, bool forceIpv6 = false)
         {
             errors = "";
             var tempFile = Path.Combine(OUTPUT_FOLDER, videoId + ".wav");
@@ -33,13 +32,13 @@ namespace yashgen
             // workaround for "invalid retry count" bug with leading dashes in IDs
             var videoUrl = $"https://www.youtube.com/watch?v={videoId}";
             
-            var info = new ProcessStartInfo(ydlLocation, 
-                 $"--ignore-config -f bestaudio -x --audio-format wav --add-metadata " +
+            var info = new ProcessStartInfo(ydlPath, 
+                 $"--ignore-config --no-progress " +
+                 $"-f bestaudio -x --audio-format wav --add-metadata " +
                  $"-o {OUTPUT_FOLDER}/%(id)s.%(ext)s \"{videoUrl}\""
                 );
 
-            // force ipv6
-            if (ipv6) 
+            if (forceIpv6) 
                 info.Arguments += " -6";
 
             #if DEBUG
@@ -70,9 +69,9 @@ namespace yashgen
             return tempFile;
         }
 
-        public static void PrintVersion()
+        public static void PrintVersion(string ydlPath)
         {
-            var info = new ProcessStartInfo(ydlLocation, "--version");
+            var info = new ProcessStartInfo(ydlPath, "--version");
             info.CreateNoWindow = true;
             info.UseShellExecute = false;
             var process = new Process();
