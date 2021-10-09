@@ -1,30 +1,30 @@
-Creates a Youtube ASH file from the command line.
+Creates a YouTube ASH file for Audiosurf 2 from the command line.
 
 ## Usage
+    yashgen video_id [options]
 
-`yashgen video_id destination [-6]`
+    Options:
+      -d, --dest=VALUE           The output folder.
+                                   Default: .
+      -p, --proc=VALUE           Path to youtube-dl or a compatible fork.
+                                   Default: ./youtube-dl
+      -6                         Forces the downloader to use IPv6.
 
-`video_id`: The ID of the YouTube video.  
-`destination`: The destination folder.  
-`-6`: Force IPv6 (optional).
-
-## Requirements
+## Installation
 ### Linux
 The following libraries / programs are needed:
 
 * libASMedia.so *(from Audiosurf 2/Audiosurf2_Data/Plugins/x86_64/)*  
 * libbass.so *(from Audiosurf 2/Audiosurf2_Data/Plugins/x86_64/)*  
-* TagLib#  
-* youtube-dl or a fork with the same API
+* youtube-dl or a compatible fork
 
 ### Windows
 The following libraries / programs are needed:
 
 * BASS *(from the AS2 directory)*  
-* ffmpeg  
-* TagLib#  
+* ffmpeg   
 * UnityMediaPlayer.dll *(from the AS2 directory)*  
-* youtube-dl or a fork with the same API
+* youtube-dl or a compatible fork
 
 ## Troubleshooting
 ### Linux
@@ -36,7 +36,7 @@ the `-6` flag.
 In case of a DllNotFoundException, run the program with `MONO_LOG_LEVEL=debug` 
 and `MONO_LOG_MASK=dll`. The output should tell you which libraries are missing.
 
-You might also have to move `libASMedia` and `libbass` to `/usr/lib/`.
+You may also have to move `libASMedia` and `libbass` to `/usr/lib/`.
 
 #### ALSA: `cannot find card 0`
 You may need to install a [dummy soundcard](https://www.raspberrypi.org/forums/viewtopic.php?p=485842&sid=5b596e5473571e5918872059e32a6873#p485842) 
