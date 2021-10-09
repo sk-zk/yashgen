@@ -12,7 +12,7 @@ Creates a YouTube ASH file for Audiosurf 2 from the command line.
 
 ## Installation
 ### Linux
-The following libraries / programs are needed:
+Mono must be installed to run this program. Additionally, the following libraries / programs are needed:
 
 * ffmpeg
 * libASMedia.so *(from Audiosurf 2/Audiosurf2_Data/Plugins/x86_64/)*  
