@@ -11,22 +11,19 @@ namespace yashgen
     /// </summary>
     class SongLoader
     {
-        List<float> ThreadAccessedDecodeSums;
+        private List<float> ThreadAccessedDecodeSums;
 
         /// <summary>
         /// Returns ASH sums of an audio file.
         /// </summary>
         /// <param name="filename">The path to the file.</param>
-        /// <param name="duration">The duration of the file in seconds.</param>
         /// <returns></returns>
-        public List<float> DecodeSongSums(string filename, float duration)
+        public List<float> DecodeSongSums(string filename)
         {
-
-            MediaPlayer.Instance.Reset();  
+            MediaPlayer.Instance.Reset();
             MediaPlayer.Instance.StartPrescan2(filename);
             ThreadAccessedDecodeSums = new List<float>();
             float[] fft = MediaPlayer.Instance.fft;
-            float num2 = (duration * 44100f) / 1024f;
 
             float item;
             while (true)
@@ -45,10 +42,10 @@ namespace yashgen
         {
             public string path;
             public float durationSeconds;
-            public ThreadedDecodeParams(string filepath, float durSecs)
+            public ThreadedDecodeParams(string path, float durationSeconds)
             {
-                this.path = filepath;
-                this.durationSeconds = durSecs;
+                this.path = path;
+                this.durationSeconds = durationSeconds;
             }
         }
 
@@ -58,8 +55,9 @@ namespace yashgen
             {
                 return -1f;
             }
+
             float b = 0f;
-            for (int i = 1; i < 0x200; i++)
+            for (int i = 1; i < 512; i++)
             {
                 b += (float)(Math.Sqrt(Math.Max(0f, fft[i])));
             }

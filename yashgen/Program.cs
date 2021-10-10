@@ -7,12 +7,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
+using Mono.Options;
 
 namespace yashgen
 {
     class Program
     {
-        static SongLoader songLoader = new SongLoader();
+        private static SongLoader songLoader = new SongLoader();
 
         private const int ExitUnspecified = -1;
         private const int ExitInvalidId = 1;
@@ -21,29 +22,46 @@ namespace yashgen
 
         static void Main(string[] args)
         {
+            string id = "";
+            string destination = ".";
+            string ydlPath = "./youtube-dl";
+            bool forceIpv6 = false;
+
+            var p = new OptionSet()
+            {
+                { "<>", 
+                    "A YouTube ID", 
+                    x => { id = x; } },
+                { "d|dest=",
+                    $"The output folder.\nDefault: {destination}", 
+                    x => { destination = x; } },
+                { "p|proc=", 
+                    $"Path to youtube-dl or a compatible fork.\nDefault: {ydlPath}", 
+                    x => { ydlPath = x; } },
+                { "6", 
+                    "Forces the downloader to use IPv6.", 
+                    x => { forceIpv6 = true; } },
+            };
+
             if (args.Length == 0)
             {
-                Console.WriteLine("Usage:");
-                Console.WriteLine("yashgen video_id destination [-6]");
+                Console.WriteLine("yashgen video_id [options]\n");
+                Console.WriteLine("Options:");
+                p.WriteOptionDescriptions(Console.Out);
                 Environment.Exit(ExitNoArgs);
             }
 
-            var id = args[0];
-            var path = args.Length > 1 ? args[1] : "";
+            p.Parse(args);
 
-            // force ytdl to use ipv6
-            // fixes "This video is not available" for auto-generated videos
-            var ipv6 = args.Contains("-6");
-            
             #if DEBUG
-                YoutubeDl.DebugPrintVersion();
+                YoutubeDl.PrintVersion(ydlPath);
             #endif
 
             try
             {
                 if (IsYoutubeId(id))
                 {
-                    ProcessVideo(id, path, ipv6);
+                    CreateAndSaveYash(id, destination, ydlPath, forceIpv6);
                     Console.WriteLine("Done\n");
                 }
                 else
@@ -52,63 +70,55 @@ namespace yashgen
                     Environment.Exit(ExitInvalidId);
                 }
             }
-            catch (YoutubeDlException yex)
-            {
+			catch (YoutubeDlException yex) 
+			{
                 Console.Error.WriteLine("youtube-dl encountered an error:");
                 Console.Error.WriteLine(yex.Message);
                 Environment.Exit(ExitYoutubeDlError);
-            }
+			}
             catch (Exception ex)
             {
                 Console.Error.WriteLine("Something went wrong:");
                 Console.Error.WriteLine(ex.ToString());
                 Environment.Exit(ExitUnspecified);
             }
-           
         }
 
-        static bool IsYoutubeId(string input)
-        {
-            return Regex.IsMatch(input, "^[a-zA-Z0-9_-]{11}$");
-        }
+        static bool IsYoutubeId(string input) 
+            => Regex.IsMatch(input, "^[a-zA-Z0-9_-]{11}$");
 
-        static void ProcessVideo(string videoId, string path, bool ipv6 = false)
+        static void CreateAndSaveYash(string videoId, string destination, string ydlPath, bool forceIpv6 = false)
         {
-            CreateAndSaveYash(videoId, path, ipv6);
-        }
-
-        static void CreateAndSaveYash(string videoId, string path, bool ipv6 = false)
-        {
-            Console.WriteLine("Processing {0} now", videoId);
+            Console.WriteLine("Processing {0}", videoId);
             Console.WriteLine("Downloading audio");
-            string ytAudioFile;
+            string ytAudioFile; 
             try
             {
-                ytAudioFile = YoutubeDl.CallYoutubeDl(videoId, ipv6);
-            }
+                ytAudioFile = YoutubeDl.CallYoutubeDl(videoId, ydlPath, forceIpv6);
+            } 
             catch (YoutubeDlException)
             {
                 throw;
             }
 
             Console.WriteLine("Analyzing song");
-            TagLib.File file = TagLib.File.Create(ytAudioFile);
+            var file = TagLib.File.Create(ytAudioFile);
             float duration = (float)file.Properties.Duration.TotalSeconds;
             file.Dispose();
-            List<float> sums = songLoader.DecodeSongSums(ytAudioFile, duration);
+            var sums = songLoader.DecodeSongSums(ytAudioFile);
 
             Console.WriteLine("Saving yash");
             try
             {
                 var filename = $"youtube_{videoId}.yash";
-                SaveYash(sums, duration, Path.Combine(path, filename));
+                SaveYash(sums, duration, Path.Combine(destination, filename));
             }
             catch (IOException)
             {
-                throw;
+				throw;
             }
-
-            try
+			
+			try
             {
                 File.Delete(ytAudioFile);
             }
