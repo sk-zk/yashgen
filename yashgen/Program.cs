@@ -26,6 +26,7 @@ namespace yashgen
             string destination = ".";
             string ydlPath = "./youtube-dl";
             bool forceIpv6 = false;
+            bool verbose = false;
 
             var p = new OptionSet()
             {
@@ -41,6 +42,9 @@ namespace yashgen
                 { "6", 
                     "Forces the downloader to use IPv6.", 
                     x => { forceIpv6 = true; } },
+                { "v|verbose",
+                    "Displays downloader console output.",
+                    x => { verbose = true; } },
             };
 
             if (args.Length == 0)
@@ -61,7 +65,7 @@ namespace yashgen
             {
                 if (IsYoutubeId(id))
                 {
-                    CreateAndSaveYash(id, destination, ydlPath, forceIpv6);
+                    CreateAndSaveYash(id, destination, ydlPath, forceIpv6, verbose);
                     Console.WriteLine("Done\n");
                 }
                 else
@@ -87,14 +91,15 @@ namespace yashgen
         static bool IsYoutubeId(string input) 
             => Regex.IsMatch(input, "^[a-zA-Z0-9_-]{11}$");
 
-        static void CreateAndSaveYash(string videoId, string destination, string ydlPath, bool forceIpv6 = false)
+        static void CreateAndSaveYash(string videoId, string destination, string ydlPath,
+            bool forceIpv6, bool verbose)
         {
             Console.WriteLine("Processing {0}", videoId);
             Console.WriteLine("Downloading audio");
             string ytAudioFile; 
             try
             {
-                ytAudioFile = YoutubeDl.CallYoutubeDl(videoId, ydlPath, forceIpv6);
+                ytAudioFile = YoutubeDl.CallYoutubeDl(videoId, ydlPath, forceIpv6, verbose);
             } 
             catch (YoutubeDlException)
             {

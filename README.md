@@ -9,6 +9,7 @@ Creates a YouTube ASH file for Audiosurf 2 from the command line.
       -p, --proc=VALUE           Path to youtube-dl or a compatible fork.
                                    Default: ./youtube-dl
       -6                         Forces the downloader to use IPv6.
+      -v, --verbose              Displays downloader console output.
 
 ## Installation
 ### Linux

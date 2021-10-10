@@ -24,7 +24,8 @@ namespace yashgen
         /// </summary>
         /// <param name="videoId">The ID of the video.</param>
         /// <returns>The path to the downloaded file.</returns>
-        public static string CallYoutubeDl(string videoId, string ydlPath, bool forceIpv6 = false)
+        public static string CallYoutubeDl(string videoId, string ydlPath, 
+            bool forceIpv6, bool verbose)
         {
             errors = "";
             var tempFile = Path.Combine(OUTPUT_FOLDER, videoId + ".wav");
@@ -41,10 +42,11 @@ namespace yashgen
             if (forceIpv6) 
                 info.Arguments += " -6";
 
-            #if DEBUG
+            if (verbose)
+            {
                 Console.WriteLine("videoUrl: " + videoUrl);
                 Console.WriteLine("args: " + info.Arguments);
-            #endif
+            }
 
             info.CreateNoWindow = true;
             info.UseShellExecute = false;
@@ -52,10 +54,13 @@ namespace yashgen
             info.RedirectStandardError = true;
             var process = new Process();
             process.StartInfo = info;
-            process.OutputDataReceived += Process_OutputDataReceived;
+            if (verbose)
+            {
+                process.OutputDataReceived += (_, e) => Console.WriteLine(e.Data);
+            }
             process.ErrorDataReceived += ErrorDataReceived;
             process.Start();
-                process.BeginOutputReadLine();
+            process.BeginOutputReadLine();
             process.BeginErrorReadLine();
             process.WaitForExit();
             process.Dispose();
@@ -64,13 +69,6 @@ namespace yashgen
                 throw new YoutubeDlException(errors);
 
             return tempFile;
-        }
-
-        private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            #if DEBUG
-                Console.WriteLine(e.Data);
-            #endif
         }
 
         public static void PrintVersion(string ydlPath)
