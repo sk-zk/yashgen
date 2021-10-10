@@ -55,7 +55,7 @@ namespace yashgen
             process.OutputDataReceived += Process_OutputDataReceived;
             process.ErrorDataReceived += ErrorDataReceived;
             process.Start();
-            process.BeginOutputReadLine();
+                process.BeginOutputReadLine();
             process.BeginErrorReadLine();
             process.WaitForExit();
             process.Dispose();
@@ -87,15 +87,10 @@ namespace yashgen
 
         private static void ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
-            #if DEBUG
-                Console.WriteLine(e.Data);
-            #endif
-        }
-
-        {
             if (!string.IsNullOrEmpty(e.Data?.Trim()))
                 errors += e.Data + "\n";
         }
 
     }
+
 }
