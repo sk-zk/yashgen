@@ -30,9 +30,6 @@ namespace yashgen
 
             var p = new OptionSet()
             {
-                { "<>", 
-                    "A YouTube ID", 
-                    x => { id = x; } },
                 { "d|dest=",
                     $"The output folder.\nDefault: {destination}", 
                     x => { destination = x; } },
@@ -44,7 +41,7 @@ namespace yashgen
                     x => { forceIpv6 = true; } },
                 { "v|verbose",
                     "Displays downloader console output.",
-                    x => { verbose = true; } },
+                    x => { verbose = true; }},
             };
 
             if (args.Length == 0)
@@ -55,7 +52,8 @@ namespace yashgen
                 Environment.Exit(ExitNoArgs);
             }
 
-            p.Parse(args);
+            id = args[0];
+            p.Parse(args.Skip(1));
 
             #if DEBUG
                 YoutubeDl.PrintVersion(ydlPath);
