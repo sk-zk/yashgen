@@ -46,10 +46,7 @@ namespace yashgen
 
             if (args.Length == 0)
             {
-                Console.WriteLine("yashgen video_id [options]\n");
-                Console.WriteLine("Options:");
-                p.WriteOptionDescriptions(Console.Out);
-                Environment.Exit(ExitNoArgs);
+                PrintUsage(p);
             }
 
             id = args[0];
@@ -86,6 +83,14 @@ namespace yashgen
             }
         }
 
+        private static void PrintUsage(OptionSet p)
+        {
+            Console.WriteLine("yashgen video_id [options]\n");
+            Console.WriteLine("Options:");
+            p.WriteOptionDescriptions(Console.Out);
+            Environment.Exit(ExitNoArgs);
+        }
+
         static bool IsYoutubeId(string input) 
             => Regex.IsMatch(input, "^[a-zA-Z0-9_-]{11}$");
 
@@ -94,7 +99,7 @@ namespace yashgen
         {
             Console.WriteLine("Processing {0}", videoId);
             Console.WriteLine("Downloading audio");
-            string ytAudioFile; 
+            string ytAudioFile;
             try
             {
                 ytAudioFile = YoutubeDl.CallYoutubeDl(videoId, ydlPath, forceIpv6, verbose);
@@ -105,9 +110,11 @@ namespace yashgen
             }
 
             Console.WriteLine("Analyzing song");
-            var file = TagLib.File.Create(ytAudioFile);
-            float duration = (float)file.Properties.Duration.TotalSeconds;
-            file.Dispose();
+            float duration;
+            using (var file = TagLib.File.Create(ytAudioFile))
+            {
+                duration = (float)file.Properties.Duration.TotalSeconds;
+            }
             var sums = songLoader.DecodeSongSums(ytAudioFile);
 
             Console.WriteLine("Saving yash");
