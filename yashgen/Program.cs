@@ -30,10 +30,10 @@ namespace yashgen
 
             var p = new OptionSet()
             {
-                { "d|dest=",
+                { "d=|dest=",
                     $"The output folder.\nDefault: {destination}", 
                     x => { destination = x; } },
-                { "p|proc=", 
+                { "p=|proc=", 
                     $"Path to youtube-dl or a compatible fork.\nDefault: {ydlPath}", 
                     x => { ydlPath = x; } },
                 { "6", 
