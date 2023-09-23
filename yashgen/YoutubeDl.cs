@@ -34,7 +34,7 @@ namespace yashgen
             var videoUrl = $"https://www.youtube.com/watch?v={videoId}";
             
             var info = new ProcessStartInfo(ydlPath, 
-                 $"--ignore-config --no-progress " +
+                 $"--no-progress " +
                  $"-f bestaudio -x --audio-format wav --add-metadata " +
                  $"-o {OUTPUT_FOLDER}/%(id)s.%(ext)s \"{videoUrl}\""
                 );
